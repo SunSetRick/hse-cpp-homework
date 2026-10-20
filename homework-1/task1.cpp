@@ -213,10 +213,3 @@ int main(int argc, char* argv[])
 }
     
 
-<<<<<<< HEAD:homework-1/task1.cpp
-
-    // std::cout << main_dif;
-
-}
-=======
->>>>>>> 6bd0807 (task 1 full rework: - добавил перепроверку количества аргументов):task1.cpp
