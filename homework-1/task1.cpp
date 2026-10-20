@@ -98,7 +98,11 @@ COMPARE_STATE compare_float_parts(char* a, char* b)
 
 int main(int argc, char* argv[])
 {
-    arguments_count_check(argc);
+    try
+    {
+        arguments_count_check(argc);
+    }
+    catch(const std::invalid_argument& e) {return 1;};
     char* a = argv[1];
     char* b = argv[2];
 
@@ -122,7 +126,7 @@ int main(int argc, char* argv[])
 
     if (is_a_neg != is_b_neg)
     {
-        std::cout << ((is_a_neg) ? "less" : "greater");
+        std::cout << ((is_a_neg) ? "less\n" : "greater\n");
         return 0;
     }
     else
@@ -144,11 +148,11 @@ int main(int argc, char* argv[])
     {
         if (!global_negative)
         {
-            std::cout << ((a_main_len < b_main_len) ? "less" : "greater");
+            std::cout << ((a_main_len < b_main_len) ? "less\n" : "greater\n");
         }
         else
         {
-            std::cout << ((a_main_len < b_main_len) ? "greater" : "less");
+            std::cout << ((a_main_len < b_main_len) ? "greater\n" : "less\n");
         }
         return 0;
     }
@@ -158,12 +162,12 @@ int main(int argc, char* argv[])
     {
         case LESS:
         {
-            std::cout << "less";
+            std::cout << "less\n";
             return 0;
         }
         case GREATER:
         {
-            std::cout << "greater";
+            std::cout << "greater\n";
             return 0;
         }
         case EQUAL:
@@ -173,15 +177,15 @@ int main(int argc, char* argv[])
             
             if (!is_a_have_float && !is_b_have_float)
             {
-                std::cout << "equal";
+                std::cout << "equal\n";
             }
             else if (!is_a_have_float && is_b_have_float)
             {
-                std::cout << (!global_negative) ? "less" : "greater";
+                std::cout << ((!global_negative) ? "less\n" : "greater\n");
             }
             else if (is_a_have_float && !is_b_have_float)
             {
-                std::cout << (!global_negative) ? "greater" : "less";
+                std::cout << ((!global_negative) ? "greater\n" : "less\n");
             }
             else
             {
@@ -193,17 +197,17 @@ int main(int argc, char* argv[])
                 {
                     case LESS:
                     {
-                        std::cout << "less";
+                        std::cout << "less\n";
                         break;
                     }
                     case GREATER:
                     {
-                        std::cout << "greater";
+                        std::cout << "greater\n";
                         break;
                     }
                     case EQUAL:
                     {
-                        std::cout << "equal";
+                        std::cout << "equal\n";
                         break;
                     }
                 }
@@ -211,5 +215,3 @@ int main(int argc, char* argv[])
         }
     }
 }
-    
-
