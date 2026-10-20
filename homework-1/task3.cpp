@@ -1,27 +1,21 @@
 #include <iostream>
 
-int find_tens(char* str_p)
+void arguments_count_check(const int& argc)
 {
-    int tens{1};
-    while (*str_p != '\0')
+    if (argc != 2)
     {
-        tens *= 10;
-        ++str_p;
+        throw std::invalid_argument("Invalid args count, you should give exactly 2 numbers");
     }
-    // std::cout << tens << ' ';
-    return tens / 10;
 }
 
 int c_string_to_int(char* p)
 {
     int res{0};
-    int tens{find_tens(p)};
     
     while (*p != '\0')
     {
-        res += ((int)*p - (int)'0') * tens;
-        // std::cout << *p << ' ' << tens << '\n';
-        tens /= 10;
+        res *= 10;
+        res += (static_cast<int>(*p) - static_cast<int>('0'));
         ++p;
     }
 
@@ -29,7 +23,16 @@ int c_string_to_int(char* p)
 }
 
 int main(int argc, char* argv[])
-{
+{   
+    
+    try {
+        arguments_count_check(argc);
+    }
+    catch (std::invalid_argument e)
+    {
+        return 1;
+    }
+    
     int n = c_string_to_int(argv[1]);
 
     float* f_arr = new float[n];
@@ -49,5 +52,7 @@ int main(int argc, char* argv[])
     }
 
     std::cout << comp;
+
+    delete[] f_arr;
 
 }

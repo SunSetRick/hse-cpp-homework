@@ -1,35 +1,50 @@
 #include <iostream>
 
-int find_tens(char* str_p)
+void arguments_count_check(const int& argc)
 {
-    int tens{1};
-    while (*str_p != '\0')
+    if (argc != 2)
     {
-        tens *= 10;
-        ++str_p;
+        throw std::invalid_argument("Invalid args count, you should give exactly 2 numbers");
     }
-    // std::cout << tens << ' ';
-    return tens / 10;
 }
 
 int c_string_to_int(char* p)
 {
     int res{0};
-    int tens{find_tens(p)};
     
     while (*p != '\0')
     {
-        res += ((int)*p - (int)'0') * tens;
-        // std::cout << *p << ' ' << tens << '\n';
-        tens /= 10;
+        res *= 10;
+        res += (static_cast<int>(*p) - static_cast<int>('0'));
         ++p;
     }
 
     return res;
 }
 
+void rotate(int*& arr, int left_index, int right_index)
+{
+    int tmp;
+    while (left_index < right_index)
+    {
+        tmp = arr[left_index];
+        arr[left_index] = arr[right_index];
+        arr[right_index] = tmp;
+        ++left_index;
+        --right_index;
+    }
+}
+
 int main(int argc, char* argv[])
 {
+    try {
+        arguments_count_check(argc);
+    }
+    catch (std::invalid_argument e)
+    {
+        return 1;
+    }
+    
     // enterput
     int n = c_string_to_int(argv[1]);
     int* arr = new int[n];
@@ -39,21 +54,17 @@ int main(int argc, char* argv[])
         std::cin >> arr[i];
     }
 
-    int k{};
+    int k;
     std::cin >> k;
 
-    // doing
-    // make every dif more comfortable (between 0 and n)
-    k = (n +(k % n)) % n;
+    k = k % n;
+    if (k < 0) {k += n;}
 
-    int tmp = arr[0];
-    int i = 0;
-    do
-    {
-        arr[i] = arr[(i + n - k) % n];
-        i = (i + n - k) % n;
-    } while ((i + n - k) % n  != 0);
-    arr[i] = tmp;
+    // reversal algorithm
+
+    rotate(arr, 0, n - k - 1);
+    rotate(arr, n - k, n - 1);
+    rotate(arr, 0, n - 1);
 
     // output
 
@@ -66,4 +77,6 @@ int main(int argc, char* argv[])
         std::cout << arr[i] << ' ';
     }
     std::cout << '\n';
+
+    delete[] arr;
 }
