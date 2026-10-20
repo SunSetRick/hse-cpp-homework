@@ -1,16 +1,106 @@
 #include <iostream>
 
+enum COMPARE_STATE
+{
+    LESS,
+    GREATER,
+    EQUAL
+};
+
+bool global_negative = false;
+
+void arguments_count_check(const int& argc)
+{
+    if (argc != 3)
+    {
+        throw std::invalid_argument("Invalid args count, you should give exactly 2 numbers");
+    }
+}
+
 bool is_point(const char& c)
 {
     return (c == '\0') || (c == '.');
 }
 
+int find_main_len(char* c_num)
+{
+    int len = 0;
+    while(!is_point(*c_num))
+    {
+        c_num++;
+        len++;
+    }
+    return len;
+}
+
+bool is_float_exists(char* c_num_from_point)
+{
+    if (*c_num_from_point == '\0')
+    {
+        return false;
+    }
+    return true;
+}
+
+COMPARE_STATE compare_main_parts(char* a, char* b, int count)
+{
+    
+    while (count > 0)
+    {
+        if (*a < *b)
+        {
+            return (!global_negative) ? LESS : GREATER;
+        }
+        else if (*a > *b)
+        {
+            return (!global_negative) ? GREATER : LESS;
+        }
+        a++;
+        b++;
+        --count;
+    }
+
+    return EQUAL;
+}
+
+
+
+COMPARE_STATE compare_float_parts(char* a, char* b)
+{
+    while (*a != '\0' && *b != '\0')
+    {
+        if (*a < *b)
+        {
+            return (!global_negative) ? LESS : GREATER;
+        }
+        else if (*a > *b)
+        {
+            return (!global_negative) ? GREATER : LESS;
+        }
+        a++;
+        b++;
+    }
+    if (*a != '\0')
+    {
+        return (!global_negative) ? GREATER : LESS;
+    }
+    else if (*b != '\0') 
+    {
+        return (!global_negative) ? LESS : GREATER;
+    }
+    else
+    {
+        return EQUAL;
+    }
+}
+
+
+
 int main(int argc, char* argv[])
 {
+    arguments_count_check(argc);
     char* a = argv[1];
     char* b = argv[2];
-
-    
 
     //sigh stabilisation
     bool is_a_neg = false;
@@ -30,131 +120,103 @@ int main(int argc, char* argv[])
         ++b;
     }
 
-    //save start positions of strings
-
-    const char* start_a = a;
-    const char* start_b = b;
-
-    // go to the probably float point point and take len of the main part
-
-    int a_main_len = 0;
-    int b_main_len = 0;
-    
-
-    while (!is_point(*a) || !is_point(*b))
-    {
-        if (!is_point(*a))
-        {
-            a_main_len++;
-            ++a;
-        }
-        if (!is_point(*b))
-        {
-            b_main_len++;
-            ++b;
-        }
-    }
-    
-
-    // forwsrd to decimal part and back to main to find dif
-    int main_dif = 0;
-    int dec_dif = 0;
-    int i = 0;
-    bool can_go_forward_dec_part = true;
-    bool can_go_back_main_part = true;
-
-    while(can_go_forward_dec_part || can_go_back_main_part)
-    {
-        // decimal
-        if (can_go_forward_dec_part)
-        {
-            if (*(a + i) == '\0' && *(b + i) == '\0')
-            {
-                can_go_forward_dec_part = false;
-            }
-            else if (*(a + i) == '\0' || *(b + i) == '\0')
-            {
-                can_go_forward_dec_part = false;
-                if (dec_dif == 0)
-                {
-                    dec_dif = (*(b + i) != '\0') ? -1 : 1;
-                    // std::cout << "wtf";
-                } 
-                
-            }
-            else
-            {
-                if (*(a + i) != *(b + i) && dec_dif == 0)
-                {
-                    dec_dif = (*(a + i) < *(b + i)) ? -1 : 1;
-                    can_go_forward_dec_part = false;
-                    // std::cout << *(a + i) << *(b + i) << "\n";
-                    // std::cout << a << b << "\n";
-                }
-            }
-        }
-        
-
-        //back for main
-        if (can_go_back_main_part)
-        {
-            if ((a - i) == start_a - 1 && (b - i) == start_b - 1)
-            {
-                can_go_back_main_part = false;
-            }
-            else if ((a - i) == start_a - 1 || (b - i) == start_b - 1)
-            {
-                can_go_back_main_part = false;
-                // std::cout << 'heheh';
-                main_dif = ((a - i) == start_a - 1) ? -1 : 1;
-            }
-            else
-            {
-                if (*(a - i) != *(b - i))
-                {
-                    main_dif = (*(a - i) < *(b - i)) ? -1 : 1;
-                    // std::cout << *(a - i) << *(b - i) << ' ' << main_dif << '|';
-                }
-            }
-        }
-
-        ++i;
-    }
-
-    // std::cout << dec_dif;
-
     if (is_a_neg != is_b_neg)
     {
         std::cout << ((is_a_neg) ? "less" : "greater");
+        return 0;
     }
     else
     {
-        if (main_dif == 1)
+        global_negative = is_a_neg;
+    }
+
+    //save start positions of strings
+
+    char* const start_a = a;
+    char* const start_b = b;
+
+    // go to the probably float point point and take len of the main part
+
+    int a_main_len = find_main_len(a);
+    int b_main_len = find_main_len(b);
+    
+    if (a_main_len != b_main_len)
+    {
+        if (!global_negative)
         {
-            std::cout << ((!is_a_neg) ? "greater" : "less");
-        }
-        else if (main_dif == -1)
-        {
-            std::cout << ((is_a_neg) ? "greater" : "less");
+            std::cout << ((a_main_len < b_main_len) ? "less" : "greater");
         }
         else
         {
-                if (dec_dif == 1)
-            {
-                std::cout << ((!is_a_neg) ? "greater" : "less");
-            }
-            else if (dec_dif == -1)
-            {
-                std::cout << ((is_a_neg) ? "greater" : "less");
-            }
-            else
+            std::cout << ((a_main_len < b_main_len) ? "greater" : "less");
+        }
+        return 0;
+    }
+
+    COMPARE_STATE main_parts_comparison = compare_main_parts(start_a, start_b, a_main_len);
+    switch(main_parts_comparison)
+    {
+        case LESS:
+        {
+            std::cout << "less";
+            return 0;
+        }
+        case GREATER:
+        {
+            std::cout << "greater";
+            return 0;
+        }
+        case EQUAL:
+        {
+            bool is_a_have_float = is_float_exists(start_a + a_main_len);
+            bool is_b_have_float = is_float_exists(start_b + b_main_len);
+            
+            if (!is_a_have_float && !is_b_have_float)
             {
                 std::cout << "equal";
             }
+            else if (!is_a_have_float && is_b_have_float)
+            {
+                std::cout << (!global_negative) ? "less" : "greater";
+            }
+            else if (is_a_have_float && !is_b_have_float)
+            {
+                std::cout << (!global_negative) ? "greater" : "less";
+            }
+            else
+            {
+                char* const start_float_a = start_a + a_main_len + 1;
+                char* const start_float_b = start_b + b_main_len + 1;
+                COMPARE_STATE float_parts_comparison = compare_float_parts(start_float_a, start_float_b);
+
+                switch(float_parts_comparison)
+                {
+                    case LESS:
+                    {
+                        std::cout << "less";
+                        break;
+                    }
+                    case GREATER:
+                    {
+                        std::cout << "greater";
+                        break;
+                    }
+                    case EQUAL:
+                    {
+                        std::cout << "equal";
+                        break;
+                    }
+                }
+            }     
         }
     }
+}
+    
 
+<<<<<<< HEAD:homework-1/task1.cpp
 
     // std::cout << main_dif;
 
 }
+=======
+>>>>>>> 6bd0807 (task 1 full rework: - добавил перепроверку количества аргументов):task1.cpp
