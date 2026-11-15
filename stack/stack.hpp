@@ -29,33 +29,42 @@ private:
         }
     };
 
-    El* top_el_ = nullptr;
+    El* top_element_ = nullptr;
     int size_ = 0;
 public:
+
+    Stack() = default;
+    ~Stack() {
+        clear();
+    }
+
+    Stack(const Stack& other) = delete;
+    Stack operator = (const Stack& other) = delete;
+
     void push(const char* str) {
-        El* new_el = new El(str, top_el_);
-        top_el_ = new_el;
+        El* new_element = new El(str, top_element_);
+        top_element_ = new_element;
         ++size_;
     }
 
     void pop() {
-        if (top_el_ == nullptr)
+        if (top_element_ == nullptr)
         {
             return;
         }
-        El* tmp = (*top_el_).prev_;
-        // (*top_el_).~El();
-        delete top_el_;
-        top_el_ = tmp;
+        El* tmp = (*top_element_).prev_;
+        // (*top_element_).~El();
+        delete top_element_;
+        top_element_ = tmp;
         --size_;
     }
 
     const char* top() const {
-        if (top_el_ == nullptr)
+        if (top_element_ == nullptr)
         {
             return nullptr;
         }
-        return (*top_el_).data_;
+        return (*top_element_).data_;
     }
 
     int size() const {
@@ -85,7 +94,7 @@ const char* Top(const Stack* stack)
     return (*stack).top();
 }
 
-const char* Top(Stack stack)
+const char* Top(Stack& stack)
 {
     return stack.top();
 }
@@ -95,7 +104,7 @@ int Size(const Stack* stack)
     return (*stack).size();
 }
 
-int Size(Stack stack)
+int Size(Stack& stack)
 {
     return stack.size();
 }
